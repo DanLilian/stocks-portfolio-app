@@ -1,5 +1,6 @@
 # Stocks Portfolio App
-n[![CI/CD](https://github.com/DanLilian/stocks-portfolio-app/actions/workflows/ci.yml/badge.svg)](https://github.com/DanLilian/stocks-portfolio-app/actions/workflows/ci.yml)
+
+[![CI/CD](https://github.com/DanLilian/stocks-portfolio-app/actions/workflows/ci.yml/badge.svg)](https://github.com/DanLilian/stocks-portfolio-app/actions/workflows/ci.yml)
 
 A backend for managing stock portfolios and valuing them against live market data, built as Python microservices.
 
