@@ -1,0 +1,48 @@
+services:
+  mongo:
+    image: mongo:7
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  market-data:
+    build: ./services/market-data
+    environment:
+      MARKET_DATA_PROVIDER: ${MARKET_DATA_PROVIDER:-yahoo}
+      QUOTE_TTL_SECONDS: ${QUOTE_TTL_SECONDS:-30}
+    ports:
+      - "8001:8001"
+
+  portfolio:
+    build: ./services/portfolio
+    environment:
+      MONGO_URI: mongodb://mongo:27017
+      MARKET_DATA_URL: http://market-data:8001
+    ports:
+      - "8002:8002"
+    depends_on:
+      mongo:
+        condition: service_healthy
+      market-data:
+        condition: service_healthy
+
+  snapshot-worker:
+    build: ./services/portfolio
+    command: ["python", "-m", "portfolio_service.worker"]
+    environment:
+      MONGO_URI: mongodb://mongo:27017
+      MARKET_DATA_URL: http://market-data:8001
+      SNAPSHOT_INTERVAL_SECONDS: ${SNAPSHOT_INTERVAL_SECONDS:-300}
+    healthcheck:
+      disable: true
+    depends_on:
+      portfolio:
+        condition: service_healthy
+
+volumes:
+  mongo-data:
