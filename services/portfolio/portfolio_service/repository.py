@@ -177,7 +177,7 @@ class PortfolioRepository:
         self.get(portfolio_id)
         cursor = (
             self._snapshots.find({"portfolio_id": _object_id(portfolio_id)})
-            .sort("taken_at", DESCENDING)
+            .sort([("taken_at", DESCENDING), ("_id", DESCENDING)])
             .limit(limit)
         )
         return [
